@@ -19,6 +19,7 @@ from nemo.collections.asr.models import EncDecCTCModel
 from nemo.core.config import hydra_runner
 from nemo.utils import logging
 from nemo.utils.exp_manager import exp_manager
+from IPython import embed
 
 
 """
@@ -69,6 +70,7 @@ Overide optimizer entirely
 def main(cfg):
     logging.info(f'Hydra config: {OmegaConf.to_yaml(cfg)}')
     trainer = pl.Trainer(**cfg.trainer)
+    embed()
     exp_manager(trainer, cfg.get("exp_manager", None))
     asr_model = EncDecCTCModel(cfg=cfg.model, trainer=trainer)
 

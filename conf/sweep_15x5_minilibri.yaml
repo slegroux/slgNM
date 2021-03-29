@@ -1,0 +1,65 @@
+command:
+  - ${env}
+  - ${interpreter}
+  - ${program}
+  - "--config-path"
+  - "conf"
+  - "--config-name"
+  - "quartznet_15x5.yaml"
+  - ${args_no_hyphens}
+program: speech_to_text.py
+method: bayes
+metric:
+  goal: minimize
+  name: val_loss
+parameters:
+  trainer.max_epochs:
+    value: 50
+  trainer.val_check_interval:
+    value: 1.0
+  +trainer.precision:
+    value: 16 
+  trainer.gpus:
+    value: 8
+  model.train_ds.manifest_filepath:
+    value: "/home/syl20/data/en/librispeech/train-clean-5.json"
+  model.train_ds.batch_size:
+    value: 64
+  +model.train_ds.pin_memory:
+    value: "true"
+  +model.train_ds.num_workers:
+    value: 110
+  model.train_ds.max_duration:
+    value: 16.7
+  model.validation_ds.manifest_filepath:
+    value: "/home/syl20/data/en/librispeech/dev-clean-2.json"
+  model.validation_ds.batch_size:
+    value: 64
+  +model.validation_ds.pin_memory:
+    value: "true"
+  +model.validation_ds.num_workers:
+    value: 110
+  model.dropout:
+    max: 0.4
+    min: 0.0
+  model.optim.betas:
+    value: [0.95,0.25]
+  model.optim.lr:
+    max: 0.09
+    min: 0.001
+  model.optim.sched.warmup_ratio:
+    max: 0.2
+    min: 0.0
+  model.optim.weight_decay:
+    max: 0.1
+    min: 0.001
+  exp_manager.create_wandb_logger:
+    value: "true"
+  exp_manager.wandb_logger_kwargs.name:
+    value: "sweep_libri"
+  exp_manager.wandb_logger_kwargs.project:
+    value: "minilibrispeech"
+  exp_manager.exp_dir:
+    value: "exp/minilibri_sweep"
+  hydra.run.dir:
+    value: "."
