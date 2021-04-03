@@ -25,18 +25,33 @@ CONFIG_PATH="conf"
 # EXP="${NM}/exp/webex"
 
 # minilibri
-TRAIN="/home/syl20/data/en/librispeech/train-clean-5.json"
-VALIDATION="/home/syl20/data/en/librispeech/dev-clean-2.json"
-# CONF_NAME="minilibri.yaml"
+# TRAIN="/home/syl20/data/en/librispeech/train-clean-5.json"
+# VALIDATION="/home/syl20/data/en/librispeech/dev-clean-2.json"
+# # CONF_NAME="minilibri.yaml"
+# CONF_NAME="quartznet_15x5.yaml"
+# MAX_DURATION=16.7
+# TRAIN_BATCH_SIZE=64
+# DEV_BATCH_SIZE=64
+# DROPOUT=0.2
+# WEIGHT_DECAY=0.001
+# WARMUP_RATIO=0.12
+# LR=0.015
+# PROJECT='minilibrispeech'
+# NAME=${PROJECT}
+# EXP="exp/${NAME}"
+
+# librispeech
+TRAIN="/home/syl20/data/en/librispeech/train-clean-360.json"
+VALIDATION="/home/syl20/data/en/librispeech/dev-clean.json"
 CONF_NAME="quartznet_15x5.yaml"
 MAX_DURATION=16.7
 TRAIN_BATCH_SIZE=64
 DEV_BATCH_SIZE=64
-DROPOUT=0.2
-WEIGHT_DECAY=0.001
-WARMUP_RATIO=0.12
-LR=0.015
-PROJECT='minilibrispeech'
+# DROPOUT=0.2
+# WEIGHT_DECAY=0.001
+# WARMUP_RATIO=0.12
+# LR=0.015
+PROJECT='librispeech'
 NAME=${PROJECT}
 EXP="exp/${NAME}"
 
