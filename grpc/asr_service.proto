@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package slgnm.asr.v1;
+
+import "google/protobuf/duration.proto";
+
+service AsrService {
+    rpc Recognize(RecognizeRequest) returns (RecognizeResponse){}
+}
+
+message RecognizeRequest {
+    RecognitionConfig config = 1;
+    RecognitionAudio audio = 2;
+}
+
+message RecognitionConfig {
+    enum AudioEncoding {
+        ENCODING_UNSPECIFIED = 0;
+        LINEAR16_PCM = 1;
+    }
+    AudioEncoding audio_encoding = 1;
+    int32 sample_rate_hertz = 2;
+}
+
+message RecognitionAudio {
+    oneof audio_source {
+        bytes content = 1;
+        string uri = 2;
+    }
+}
+
+message RecognizeResponse {
+    repeated SpeechRecognitionResult results = 2;
+    string version = 3;
+}
+
+message SpeechRecognitionResult {
+    repeated SpeechRecognitionAlternative alternatives = 1;
+}
+
+message SpeechRecognitionAlternative {
+    string transcript = 1;
+    float confidence = 2;
+    repeated WordInfo words = 3;
+}
+
+message WordInfo {
+    google.protobuf.Duration start_time = 1;
+    google.protobuf.Duration end_time = 2;
+    string word = 3;
+    float confidence = 4;
+}
