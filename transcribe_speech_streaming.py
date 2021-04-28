@@ -1,36 +1,42 @@
 #!/usr/bin/env python
 
+from examples.slgNM.stream_test import SAMPLE_RATE
 import pyaudio as pa
-from frame_asr import FrameASR
+from frame_asr import FrameASR, AudioDataLayer, DataLoader, preprocessor_normalization
 import numpy as np
 import time 
 from omegaconf import OmegaConf
 import copy
 import nemo.collections.asr as nemo_asr
+import numpy as np
 
-SAMPLE_RATE= 16000
 # duration of signal frame, seconds
 FRAME_LEN = 1.0
 # number of audio channels (expect mono signal)
 CHANNELS = 1
-
+SAMPLE_RATE = 16000
 CHUNK_SIZE = int(FRAME_LEN*SAMPLE_RATE)
 
+# asr model
 asr_model = nemo_asr.models.EncDecCTCModel.from_pretrained('QuartzNet15x5Base-En')
 cfg = copy.deepcopy(asr_model._cfg)
 
-asr = FrameASR(model_definition = {
-				   'sample_rate': SAMPLE_RATE,
-				   'AudioToMelSpectrogramPreprocessor': cfg.preprocessor,
-				   'JasperEncoder': cfg.encoder,
-				   'labels': cfg.decoder.vocabulary
-			   },
-			   frame_len=FRAME_LEN, frame_overlap=2, 
-			   offset=4)
+#preprocessor normalization
+cfg = preprocessor_normalization(cfg)
+asr_model.preprocessor = asr_model.from_config_dict(cfg.preprocessor)
+
+# inference mode
+asr_model.eval()
+asr_model = asr_model.to(asr_model.device)
+
+asr = FrameASR(asr_model, cfg,
+			frame_len=FRAME_LEN, frame_overlap=2,
+			offset=4)
 
 asr.reset()
 
 p = pa.PyAudio()
+
 print('Available audio input devices:')
 input_devices = []
 for i in range(p.get_device_count()):
@@ -64,7 +70,7 @@ if len(input_devices):
 					channels=CHANNELS,
 					rate=SAMPLE_RATE,
 					input=True,
-					input_device_index=dev_idx,
+					# input_device_index=dev_idx,
 					stream_callback=callback,
 					frames_per_buffer=CHUNK_SIZE)
 
