@@ -4,6 +4,7 @@ package slgnm.asr.v1;
 
 service AsrService {
     rpc Recognize(RecognizeRequest) returns (RecognizeResponse){}
+    rpc StreamingRecognize (stream RecognizeRequest) returns (stream RecognizeResponse) {}
 }
 
 message RecognizeRequest {

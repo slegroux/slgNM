@@ -9,6 +9,8 @@ import torch
 import nemo.collections.asr as nemo_asr
 from nemo.utils import logging, model_utils
 
+# logging.setLevel(logging.INFO)
+
 # setup AMP (optional)
 if torch.cuda.is_available() and hasattr(torch.cuda, 'amp') and hasattr(torch.cuda.amp, 'autocast'):
     logging.info("AMP enabled!\n")
@@ -31,7 +33,7 @@ def get_model_names():
     local_model_paths = glob.glob(os.path.join('models', "**", "*.nemo"), recursive=True)
     local_model_names = list(sorted([os.path.basename(path) for path in local_model_paths]))
 
-    # Populate with pretrained nemo checkpoint list
+    # Populate with pretrained checkpoint list
     nemo_model_names = set()
     for model_info in nemo_asr.models.ASRModel.list_available_models():
         for superclass in model_info.class_.mro():

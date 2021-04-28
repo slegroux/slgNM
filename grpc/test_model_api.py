@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from model_api import initialize_model, transcribe_all
+from nemo.utils import logging
+logging.setLevel(logging.ERROR)
 
 MDL = 'QuartzNet15x5Base-En'
 WAV = '1919-142785-0028.wav'

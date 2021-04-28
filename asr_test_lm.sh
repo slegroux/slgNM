@@ -20,10 +20,12 @@
 
 # WEBEX
 MDL="${NM}/exp/tl_wbx/QuartzNet15x5/2021-02-28_21-33-55/checkpoints/QuartzNet15x5.nemo"
-# TEST_DATA=${DATA}/en/webex/webex.tiny.json
-TEST_DATA=${DATA}/en/webex/webex.tst.json
+TEST_DATA=${DATA}/en/webex/webex.tiny.json
+# TEST_DATA=${DATA}/en/webex/webex.tst.json
 LM_PATH=${DATA}/en/webex/lm/3-gram.train.lower.arpa
+#
 # LM_PATH=${DATA}/en/librispeech/lm/lowercase_3-gram.pruned.1e-7.arpa
+#
 ALPHA=2.0
 BETA=1.5
 BEAM_WIDTH=128
