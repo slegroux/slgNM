@@ -1,5 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-
 import contextlib
 import glob
 import os
@@ -8,19 +6,16 @@ import torch
 
 import nemo.collections.asr as nemo_asr
 from nemo.utils import logging, model_utils
-
-# logging.setLevel(logging.INFO)
+logging.setLevel(logging.CRITICAL)
 
 # setup AMP (optional)
 if torch.cuda.is_available() and hasattr(torch.cuda, 'amp') and hasattr(torch.cuda.amp, 'autocast'):
     logging.info("AMP enabled!\n")
     autocast = torch.cuda.amp.autocast
 else:
-
     @contextlib.contextmanager
     def autocast():
         yield
-
 
 MODEL_CACHE = {}
 
@@ -94,19 +89,14 @@ def transcribe_all(filepaths, model_name, use_gpu_if_available=True):
     except RuntimeError:
         # Purge the cache to clear some memory
         MODEL_CACHE.clear()
-
         logging.info("Ran out of memory on device - performing inference on CPU for now")
-
         try:
             model = model.cpu()
-
             with torch.no_grad():
                 transcriptions = model.transcribe(filepaths, batch_size=32)
-
         except Exception as e:
             logging.info(f"Exception {e} occured while attemting to transcribe audio. Returning error message")
             return TAG_ERROR_DURING_TRANSCRIPTION
-
     logging.info(f"Finished transcribing {len(filepaths)} files !")
 
     # If RNNT models transcribe, they return a tuple (greedy, beam_scores)
@@ -119,3 +109,32 @@ def transcribe_all(filepaths, model_name, use_gpu_if_available=True):
     MODEL_CACHE[model_name] = model
 
     return transcriptions
+
+
+from nemo.utils import logging
+logging.setLevel(logging.ERROR)
+from frame_asr import FrameASR, AudioDataLayer, DataLoader, preprocessor_normalization
+from omegaconf import OmegaConf
+import copy
+import nemo.collections.asr as nemo_asr
+
+
+def init_streaming_mdl(MDL, frame_len=1, frame_overlap=2, offset=4):
+
+    # asr model
+    asr_model = nemo_asr.models.EncDecCTCModel.from_pretrained(MDL)
+    cfg = copy.deepcopy(asr_model._cfg)
+
+    #preprocessor normalization
+    cfg = preprocessor_normalization(cfg)
+    asr_model.preprocessor = asr_model.from_config_dict(cfg.preprocessor)
+
+    # inference mode
+    asr_model.eval()
+    asr_model = asr_model.to(asr_model.device)
+    asr = FrameASR(asr_model, cfg,
+			frame_len=frame_len, frame_overlap=frame_overlap,
+			offset=offset)
+
+    asr.reset()
+    return(asr)
