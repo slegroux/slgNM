@@ -1,0 +1,42 @@
+syntax = "proto3";
+package test;
+
+service Test{
+    rpc GetServerResponse(Message) returns (MessageResponse) {}
+    rpc GetServerStreamingResponse(stream RecognizeRequest) returns (stream RecognizeResponse) {}
+}
+
+message Message{
+    string message = 1;
+}
+
+message MessageResponse{
+    string message = 1;
+    bool received = 2;
+}
+
+message RecognizeRequest {
+    RecognitionConfig config = 1;
+    RecognitionAudio audio = 2;
+}
+
+message RecognitionConfig {
+    enum AudioEncoding {
+        ENCODING_UNSPECIFIED = 0;
+        LINEAR16_PCM = 1;
+    }
+    AudioEncoding audio_encoding = 1;
+    int32 sample_rate = 2;
+}
+
+message RecognitionAudio {
+    oneof audio_source {
+        bytes content = 1;
+        string uri = 2;
+    }
+}
+
+message RecognizeResponse {
+    // string transcript = 1;
+    bytes audio_bytes = 1;
+}
