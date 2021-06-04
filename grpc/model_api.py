@@ -113,7 +113,7 @@ def transcribe_all(filepaths, model_name, use_gpu_if_available=True):
 
 from nemo.utils import logging
 logging.setLevel(logging.ERROR)
-from frame_asr import FrameASR, AudioDataLayer, DataLoader, preprocessor_normalization
+from streaming_asr import StreamingASR, AudioDataLayer, DataLoader, preprocessor_normalization
 from omegaconf import OmegaConf
 import copy
 import nemo.collections.asr as nemo_asr
@@ -132,7 +132,7 @@ def init_streaming_mdl(MDL, frame_len=1, frame_overlap=2, offset=4):
     # inference mode
     asr_model.eval()
     asr_model = asr_model.to(asr_model.device)
-    asr = FrameASR(asr_model, cfg,
+    asr = StreamingASR(asr_model, cfg,
 			frame_len=frame_len, frame_overlap=frame_overlap,
 			offset=offset)
 

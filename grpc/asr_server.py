@@ -31,6 +31,7 @@ class AsrServiceServicer(asr_service_pb2_grpc.AsrServiceServicer):
             data = request.audio.content
             response = asr_service_pb2.RecognizeResponse()
             signal = np.frombuffer(data, dtype=np.int16)
+            print(np.mean(signal))
             response.transcript = self.streaming_mdl.transcribe(signal)
             yield response
 

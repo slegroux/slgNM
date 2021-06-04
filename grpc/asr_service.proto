@@ -30,4 +30,5 @@ message RecognitionAudio {
 
 message RecognizeResponse {
     string transcript = 1;
+    // bytes audio_bytes = 1;
 }
