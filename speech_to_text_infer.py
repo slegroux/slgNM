@@ -20,16 +20,12 @@ This script serves three goals:
 """
 
 from argparse import ArgumentParser
-from logging import ERROR
 
 import torch
 
 from nemo.collections.asr.metrics.wer import WER, word_error_rate
 from nemo.collections.asr.models import EncDecCTCModel
 from nemo.utils import logging
-from IPython import embed
-
-logging.setLevel(logging.ERROR)
 
 try:
     from torch.cuda.amp import autocast
@@ -70,6 +66,10 @@ def main():
     else:
         logging.info(f"Using NGC cloud ASR model {args.asr_model}")
         asr_model = EncDecCTCModel.from_pretrained(model_name=args.asr_model)
+
+    asr_model.preprocessor.featurizer.pad_to = 0
+    asr_model.preprocessor.featurizer.dither = 0.0
+
     asr_model.setup_test_data(
         test_data_config={
             'sample_rate': 16000,
@@ -94,8 +94,6 @@ def main():
                 input_signal=test_batch[0], input_signal_length=test_batch[1]
             )
         hypotheses += wer.ctc_decoder_predictions_tensor(greedy_predictions)
-
-
         for batch_ind in range(greedy_predictions.shape[0]):
             seq_len = test_batch[3][batch_ind].cpu().detach().numpy()
             seq_ids = test_batch[2][batch_ind].cpu().detach().numpy()
@@ -103,16 +101,11 @@ def main():
             references.append(reference)
         del test_batch
 
-    for i, hyp in enumerate(hypotheses):
-        print(f'**Transcript {i}:** {hyp}')
-        print('---------------------------')
-
     wer_value = word_error_rate(hypotheses=hypotheses, references=references, use_cer=args.use_cer)
     if not args.use_cer:
         if wer_value > args.wer_tolerance:
             raise ValueError(f"got wer of {wer_value}. it was higher than {args.wer_tolerance}")
         logging.info(f'Got WER of {wer_value}. Tolerance was {args.wer_tolerance}')
-        print(f'Got WER of {wer_value}.')
     else:
         logging.info(f'Got CER of {wer_value}')
 

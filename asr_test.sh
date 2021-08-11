@@ -13,8 +13,8 @@ MDL=${MDL_PATH}/nemospeechmodels_1.0.0a5/QuartzNet15x5NR-En.nemo
 
 #### DATASETS
 # TEST_DATA=${DATA}/en/librispeech/dev-clean-2.json
-TEST_DATA=${DATA}/en/webex/webex.tst.json 
-# TEST_DATA=${DATA}/en/webex/webex.tiny.json
+# TEST_DATA=${DATA}/en/webex/webex.tst.json 
+TEST_DATA=${DATA}/en/webex/webex.tiny.json
 
 ### RESULTS
 # MDL   | Tiny | TST
@@ -23,7 +23,6 @@ TEST_DATA=${DATA}/en/webex/webex.tst.json
 # Q15x5 | 0.31 | 0.372
 
 # python speech_to_text_infer.py --asr_model=${MDL} --dataset=${TEST_DATA}
-
 
 #### LM
 # LM_PATH=${DATA}/en/webex/lm/3-gram.train.lower.arpa #(0.258, 16) (0.232, 100)
@@ -34,7 +33,7 @@ TEST_DATA=${DATA}/en/webex/webex.tst.json
 #### HYPERPARAM
 ALPHA=1.0
 BETA=1.0
-BEAM_WIDTH=16
+BEAM_WIDTH=128
 
 #### RESULTS
 #ALPHA=1.5, BETA=0.9, BW=16
@@ -49,3 +48,5 @@ python speech_to_text_infer_lm.py --asr_model=${MDL} --dataset=${TEST_DATA} --lm
     --alpha ${ALPHA} --beta ${BETA} --beam_width ${BEAM_WIDTH}
 
 
+#### BUFFERED
+python speech_to_text_buffered_infer.py --asr_model=${MDL} --test_manifest=${TEST_DATA} --output_path=output

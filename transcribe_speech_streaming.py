@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from examples.slgNM.stream_test import SAMPLE_RATE
 import pyaudio as pa
 from frame_asr import FrameASR, AudioDataLayer, DataLoader, preprocessor_normalization
 import numpy as np

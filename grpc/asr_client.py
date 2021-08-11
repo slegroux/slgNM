@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from audio import AudioStream
+# from audio import AudioStream
 import logging
 import grpc
 from numpy.lib.stride_tricks import as_strided
@@ -13,7 +13,8 @@ import pyaudio
 
 # IP = 'localhost'
 # IP='http://dx05.sail.prime.cisco.com/'
-IP='172.21.150.75'
+# IP='172.21.150.75'
+IP='localhost'
 PORT = '50051'
 SR = 16000
 # CHUNK_SIZE = 1024
@@ -112,29 +113,29 @@ def callback(self, in_data, frame_count, time_info, flag):
 	buff.put(in_data)
 	return None, pyaudio.paContinue
 
-def gen_mic():
-	config = set_recognition_config()
-	a = AudioStream(mode='r')
-	a.sampling_rate = SR
-	a.chunk = CHUNK_SIZE
-	a.input_device = 0
-	a.register_callback(callback)
-	chunk = buff.get()
-	data = [chunk]
-	while True:
-		try:
-			chunk = buff.get(block=False)
-			if chunk is None:
-				return
-			data.append(chunk)
-		except queue.Empty:
-			break
+# def gen_mic():
+# 	config = set_recognition_config()
+# 	a = AudioStream(mode='r')
+# 	a.sampling_rate = SR
+# 	a.chunk = CHUNK_SIZE
+# 	a.input_device = 0
+# 	a.register_callback(callback)
+# 	chunk = buff.get()
+# 	data = [chunk]
+# 	while True:
+# 		try:
+# 			chunk = buff.get(block=False)
+# 			if chunk is None:
+# 				return
+# 			data.append(chunk)
+# 		except queue.Empty:
+# 			break
 
-	# yield b''.join(data)
-		yield asr_service_pb2.RecognizeRequest(
-				config=config,
-				audio=asr_service_pb2.RecognitionAudio(content= b''.join(data))
-				)
+# 	# yield b''.join(data)
+# 		yield asr_service_pb2.RecognizeRequest(
+# 				config=config,
+# 				audio=asr_service_pb2.RecognitionAudio(content= b''.join(data))
+# 				)
 
 def gen_file_stream(audio_file_name):
 	config = set_recognition_config()

@@ -19,7 +19,6 @@ from nemo.collections.asr.modules import BeamSearchDecoderWithLM
 from nemo.utils import logging
 from IPython import embed
 
-logging.setLevel(logging.ERROR)
 
 try:
     from torch.cuda.amp import autocast
@@ -108,10 +107,8 @@ def main():
             )
 
         beam_predictions = beam_search_lm.forward(log_probs=log_probs, log_probs_length=encoded_len)
-
         # beam_results, beam_scores, timesteps, out_lens = beam_search_lm.decode(log_probs)
         hypotheses += [pred[0][1] for pred in beam_predictions]
-
 
         for batch_ind in range(greedy_predictions.shape[0]):
             seq_len = test_batch[3][batch_ind].cpu().detach().numpy()
@@ -119,15 +116,12 @@ def main():
             reference = ''.join([labels_map[c] for c in seq_ids[0:seq_len]])
             references.append(reference)
         del test_batch
-
-    for i, hyp in enumerate(hypotheses):
-        print(f'**Transcript {i}:** {hyp}')
-        print('---------------------------')
+    
     wer_value = word_error_rate(hypotheses=hypotheses, references=references)
     if wer_value > args.wer_tolerance:
         raise ValueError(f"Got WER of {wer_value}. It was higher than {args.wer_tolerance}")
     logging.info(f'Got WER of {wer_value}. Tolerance was {args.wer_tolerance}')
-    print(f'Got WER of {wer_value}.')
+
 
 if __name__ == '__main__':
     main()  # noqa pylint: disable=no-value-for-parameter
